@@ -17,15 +17,17 @@ context.beginPath();
 context.arc(x, y, radius + width/2-5, 0, 2 * Math.PI, false);
 context.clip();
 
-context.strokeStyle = 'gray';
+context.strokeStyle = '#BDBDBD';
+//context.strokeStyle = 'white';
 /* circles. */
 drawCircle(x, y, radius, depth)
 
 /* arc drawing. */
 context.strokeStyle = 'black';
 var arcs = [];
-arcs[0] = {'circle' : 0, 'width' : 6, 'start' : 0.0, 'end' : 1.5 * Math.PI};
-arcs[1] = {'circle' : 145, 'width' : 2, 'start' : Math.PI, 'end' : 1.5 * Math.PI};
+for(var i = 0; i < 100; i++)
+	arcs[i] = {'circle' : Math.floor(Math.random() * 1500.), 'width' : Math.floor(Math.random() * 10.), 'start' : Math.random(), 'end' : Math.random() * Math.PI};
+
 for(var i in arcs){
 	arc = arcs[i];
 	circle = circles[arc.circle];
@@ -37,7 +39,8 @@ for(var i in arcs){
 	context.stroke();
 }
 
-//alert(JSON.stringify(circles[0], undefined, 2));
+alert(numCircles);
+alert(JSON.stringify(circles[145], undefined, 2));
 
 function drawCircle(cx, cy, cradius, cdepth){
 	if(cdepth == 0) return;
@@ -50,7 +53,7 @@ function drawCircle(cx, cy, cradius, cdepth){
 	drawCircleOnCanvas(cx, cy, cradius, cdepth);
 	drawCircleOnCanvas(cx, cy+cradius, cradius, cdepth);
 	drawCircleOnCanvas(cx, cy-cradius, cradius, cdepth);
-	var xlag = Math.sqrt(cradius*cradius - (cradius/2)*(cradius/2), cdepth)
+	var xlag = Math.sqrt(cradius*cradius - (cradius/2)*(cradius/2))
 	drawCircleOnCanvas(cx+xlag, cy+cradius/2, cradius, cdepth);
 	drawCircleOnCanvas(cx+xlag, cy-cradius/2, cradius, cdepth);
 	drawCircleOnCanvas(cx-xlag, cy+cradius/2, cradius, cdepth);
