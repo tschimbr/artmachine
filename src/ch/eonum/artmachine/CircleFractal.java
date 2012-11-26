@@ -112,39 +112,48 @@ public class CircleFractal {
 	public Drawing createRandomDrawingWithIntersections(int maxArcs) {
 		Drawing d = new Drawing();
 		int arcs = this.rand.nextInt(maxArcs) + 1;
-		Circle cc = null;
+		
 		double end = 0.0;
+		boolean choice = false;
 		double rwidth = widthList.get(rand
 				.nextInt(widthList.size()));
+		Circle previous = null;
+		Circle next = null;
 		for(int i = 0; i < arcs; i++){
-			Circle circle1 = circles.get(rand.nextInt(circles.size()));
+			Circle circle = circles.get(rand.nextInt(circles.size()));
 			double start = 0.0;
-			if (cc == null || rand.nextDouble() < 0.1) {// #TODO genetic
+			if (next == null || rand.nextDouble() < 0.0) {// #TODO genetic
 														// parameter
-				cc = getRandomIntersectingCircle(circle1);
-				start = intersection(circle1, cc);
+				previous = getRandomIntersectingCircle(circle);
+				start = intersection(circle, previous, rand.nextBoolean());
 				rwidth = widthList.get(rand
 						.nextInt(widthList.size()));
 			} else {
-				circle1 = getRandomIntersectingCircle(cc);
-				start = intersection(circle1, cc);
+				circle = next;
+				start = intersection(circle, previous, choice);
 			}
-			cc = getRandomIntersectingCircle(circle1);
-			end = intersection(circle1, cc);
-			d.addArc(new Arc(circle1.index, rwidth / 1000., start, end));
+			next = getRandomIntersectingCircle(circle);
+			choice = rand.nextBoolean();
+			end = intersection(circle, next, choice);
+			d.addArc(new Arc(circle.index, rwidth / 1000., start, end));
+			previous = circle;
 		}
 		return d;
 	}
 
-	private double intersection(Circle circle1, Circle circle2) {
+	private double intersection(Circle circle1, Circle circle2, boolean choice) {
 		double b = circle1.radius;
 		double a = circle2.radius;
 		double c = Math.sqrt(Math.pow(circle1.y - circle2.y, 2)
 				+ Math.pow(circle1.x - circle2.x, 2));
 		double d = circle2.y - circle1.y;
+		double f = circle2.x - circle1.x;
 		double beta = Math.acos(Math.abs(d)/c);
 		double alpha = Math.acos((b*b-a*a-c*c)/(-2*a*c));
-		double angle = d > 0 ? alpha - beta : alpha + beta;
+		double angle = choice ? beta - alpha : beta + alpha; // #TODO choose either beta + alpha or beta - alpha
+		if(f < 0 && d > 0) angle = Math.PI - angle;
+		if(f < 0 && d < 0) angle = Math.PI + angle;
+		if(f > 0 && d < 0) angle = 2* Math.PI - angle;
 		if(angle >= 2*Math.PI) angle -= Math.PI;
 		if(angle < 0) angle += Math.PI;
 		return angle;
