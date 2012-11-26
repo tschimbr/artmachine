@@ -122,7 +122,7 @@ public class CircleFractal {
 		for(int i = 0; i < arcs; i++){
 			Circle circle = circles.get(rand.nextInt(circles.size()));
 			double start = 0.0;
-			if (next == null || rand.nextDouble() < 0.0) {// #TODO genetic
+			if (next == null || rand.nextDouble() < 0.2) {// #TODO genetic
 														// parameter
 				previous = getRandomIntersectingCircle(circle);
 				start = intersection(circle, previous, rand.nextBoolean());
@@ -142,20 +142,20 @@ public class CircleFractal {
 	}
 
 	private double intersection(Circle circle1, Circle circle2, boolean choice) {
-		double b = circle1.radius;
-		double a = circle2.radius;
+		double a = circle1.radius;
+		double b = circle2.radius;
 		double c = Math.sqrt(Math.pow(circle1.y - circle2.y, 2)
 				+ Math.pow(circle1.x - circle2.x, 2));
 		double d = circle2.y - circle1.y;
 		double f = circle2.x - circle1.x;
-		double beta = Math.acos(Math.abs(d)/c);
+		double beta = Math.asin(Math.abs(d)/c);
 		double alpha = Math.acos((b*b-a*a-c*c)/(-2*a*c));
-		double angle = choice ? beta - alpha : beta + alpha; // #TODO choose either beta + alpha or beta - alpha
+		double angle = choice ? beta - alpha : beta + alpha;
 		if(f < 0 && d > 0) angle = Math.PI - angle;
 		if(f < 0 && d < 0) angle = Math.PI + angle;
 		if(f > 0 && d < 0) angle = 2* Math.PI - angle;
-		if(angle >= 2*Math.PI) angle -= Math.PI;
-		if(angle < 0) angle += Math.PI;
+		if(angle >= 2*Math.PI) angle = angle%(2*Math.PI);
+		if(angle < 0.) angle = angle%(2*Math.PI);
 		return angle;
 	}
 

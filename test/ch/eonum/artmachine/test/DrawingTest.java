@@ -39,12 +39,13 @@ public class DrawingTest {
 			for(Arc each : rd.getArcs()){
 				assertTrue(each.circle >= 0);
 				assertTrue(each.circle < 1529);
+				assertFalse(Double.isNaN(each.end));
+				assertFalse(Double.isNaN(each.start));
 				assertTrue(each.start >= 0);
 				assertTrue(each.start < 2*Math.PI);
 				assertTrue(each.end >= 0);
 				assertTrue(each.end < 2*Math.PI);
-				assertFalse(Double.isNaN(each.end));
-				assertFalse(Double.isNaN(each.start));
+				
 			}
 		}
 	}

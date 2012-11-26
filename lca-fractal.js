@@ -27,7 +27,7 @@ context.strokeStyle = 'black';
 
 for(var i in arcs){
 	arc = arcs[i];
-	if(i < 12) alert(arc);
+	//if(i < 12) alert(arc);
 	circle = circles[arc.circle];
 	//alert(JSON.stringify(circle, undefined, 2));
 	//alert(JSON.stringify(arc, undefined, 2));
