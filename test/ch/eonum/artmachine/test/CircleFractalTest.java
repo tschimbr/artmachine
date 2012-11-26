@@ -3,6 +3,7 @@ package ch.eonum.artmachine.test;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -27,6 +28,9 @@ public class CircleFractalTest {
 		assertEquals(562.5, c145.y, 0.0001);
 		assertEquals(25, c145.radius, 0.0001);
 		assertEquals(1, c145.depth);
+		
+		Set<Integer> possibleWidths = cf.getPossibleWidths();
+		assertEquals(5, possibleWidths.size());
 
 	}
 

@@ -39,8 +39,8 @@ for(var i in arcs){
 	context.stroke();
 }
 
-alert(numCircles);
-alert(JSON.stringify(circles[145], undefined, 2));
+//alert(numCircles);
+//alert(JSON.stringify(arcs[2], undefined, 2));
 
 function drawCircle(cx, cy, cradius, cdepth){
 	if(cdepth == 0) return;

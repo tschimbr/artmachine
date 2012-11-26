@@ -46,7 +46,7 @@ public class CircleFractal {
 		if(Math.sqrt((cy - y)*(cy - y)+(cx - x)*(cx - x)) > cradius + radius) return;
 
 		double lineWidth = width / (Math.pow(2.0, depth-cdepth+2));
-		this.possibleWidths.add((int)lineWidth*1000);
+		this.possibleWidths.add((int)(lineWidth*1000.));
 
 		storeCircle(cx, cy, cradius, cdepth);
 		storeCircle(cx, cy+cradius, cradius, cdepth);
@@ -56,7 +56,6 @@ public class CircleFractal {
 		storeCircle(cx+xlag, cy-cradius/2, cradius, cdepth);
 		storeCircle(cx-xlag, cy+cradius/2, cradius, cdepth);
 		storeCircle(cx-xlag, cy-cradius/2, cradius, cdepth);
-
 		
 		makeCircle(cx, cy, cradius/2., cdepth - 1);
 		makeCircle(cx, cy+cradius, cradius/2., cdepth - 1);
@@ -82,6 +81,10 @@ public class CircleFractal {
 	
 	public List<Circle> getCirclesByDepth(int i) {
 		return this.circlesByDepth.get(i);
+	}
+
+	public Set<Integer> getPossibleWidths() {
+		return this.possibleWidths;
 	}
 
 }
