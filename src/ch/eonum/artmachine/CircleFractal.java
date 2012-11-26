@@ -3,6 +3,7 @@ package ch.eonum.artmachine;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -23,6 +24,8 @@ public class CircleFractal {
 	private List<Circle> circles;
 	private List<List<Circle>> circlesByDepth;
 	private Set<Integer> possibleWidths;
+	private List<Integer> widthList;
+	private Random rand;
 
 	public CircleFractal(int radius, int depth, int width, int x, int y) {
 		this.radius = radius;
@@ -33,10 +36,14 @@ public class CircleFractal {
 		this.circleskeys = new HashSet<String>();
 		this.circles = new ArrayList<Circle>();
 		this.circlesByDepth = new ArrayList<List<Circle>>();
+		this.rand = new Random(23);
 		for(int i = 0; i < depth; i++)
 			circlesByDepth.add(new ArrayList<Circle>());
 		this.possibleWidths = new HashSet<Integer>();
+		this.widthList= new ArrayList<Integer>();
 		this.makeCircle(x, y, radius, depth);
+		for(Integer each : possibleWidths)
+			widthList.add(each);
 	}
 
 	private void makeCircle(double cx, double cy, double cradius, int cdepth) {
@@ -87,4 +94,13 @@ public class CircleFractal {
 		return this.possibleWidths;
 	}
 
+	public Drawing createRandomDrawing(int maxArcs) {
+		Drawing d = new Drawing();
+		int arcs = this.rand.nextInt(maxArcs) + 1;
+		for(int i = 0; i < arcs; i++)
+			d.addArc(new Arc(rand.nextInt(circles.size()), widthList.get(rand
+					.nextInt(widthList.size())) / 1000., rand.nextDouble() * 2
+					* Math.PI, rand.nextDouble() * 2 * Math.PI));
+		return d;
+	}
 }

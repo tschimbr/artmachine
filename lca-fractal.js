@@ -24,9 +24,6 @@ drawCircle(x, y, radius, depth)
 
 /* arc drawing. */
 context.strokeStyle = 'black';
-var arcs = [];
-for(var i = 0; i < 100; i++)
-	arcs[i] = {'circle' : Math.floor(Math.random() * 1500.), 'width' : Math.floor(Math.random() * 10.), 'start' : Math.random(), 'end' : Math.random() * Math.PI};
 
 for(var i in arcs){
 	arc = arcs[i];

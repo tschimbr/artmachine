@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ch.eonum.artmachine.Arc;
+import ch.eonum.artmachine.CircleFractal;
 import ch.eonum.artmachine.Drawing;
 
 public class DrawingTest {
@@ -26,5 +27,19 @@ public class DrawingTest {
 				"  \"start\": 2.3,\n" + 
 				"  \"end\": 2.2\n" + 
 				"}]", d.toJSON());
+	}
+	
+	@Test
+	public void testRandomCreation(){
+		CircleFractal cf = new CircleFractal(400, 5, 15, 450, 450);
+		for(int i = 0; i < 100; i++){
+			Drawing rd = cf.createRandomDrawing(150);
+			assertTrue(rd.getArcs().size() > 0);
+			assertTrue(rd.getArcs().size() <= 150);
+			for(Arc each : rd.getArcs()){
+				assertTrue(each.circle >= 0);
+				assertTrue(each.circle < 1529);
+			}
+		}
 	}
 }
