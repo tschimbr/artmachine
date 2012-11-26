@@ -18,7 +18,7 @@ context.arc(x, y, radius + width/2-5, 0, 2 * Math.PI, false);
 context.clip();
 
 context.strokeStyle = '#BDBDBD';
-//context.strokeStyle = 'white';
+context.strokeStyle = 'white';
 /* circles. */
 drawCircle(x, y, radius, depth)
 

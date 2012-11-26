@@ -76,7 +76,7 @@ public class CircleFractal {
 	private void storeCircle(double cx, double cy, double cradius, int cdepth) {
 		String circle = Math.floor(cx*100) + "-" + Math.floor(cy*100) + "-" + Math.floor(cradius*100);
 		if(circleskeys.contains(circle)) return;
-		Circle c = new Circle(cx, cy, cradius, cdepth);
+		Circle c = new Circle(cx, cy, cradius, cdepth, circles.size());
 		circles.add(c);
 		circlesByDepth.get(depth - cdepth).add(c);
 		circleskeys.add(circle);
@@ -112,26 +112,31 @@ public class CircleFractal {
 	public Drawing createRandomDrawingWithIntersections(int maxArcs) {
 		Drawing d = new Drawing();
 		int arcs = this.rand.nextInt(maxArcs) + 1;
+		Circle cc = null;
+		double end = 0.0;
+		double rwidth = widthList.get(rand
+				.nextInt(widthList.size()));
 		for(int i = 0; i < arcs; i++){
-			int circleIndex = rand.nextInt(circles.size());
-			Circle circle1 = circles.get(circleIndex);
-			double start = randomIntersection(circle1);
-			double end = randomIntersection(circle1);
-			d.addArc(new Arc(circleIndex, widthList.get(rand
-					.nextInt(widthList.size())) / 1000., start, end));
+			Circle circle1 = circles.get(rand.nextInt(circles.size()));
+			double start = 0.0;
+			if (cc == null || rand.nextDouble() < 0.1) {// #TODO genetic
+														// parameter
+				cc = getRandomIntersectingCircle(circle1);
+				start = intersection(circle1, cc);
+				rwidth = widthList.get(rand
+						.nextInt(widthList.size()));
+			} else {
+				circle1 = getRandomIntersectingCircle(cc);
+				start = intersection(circle1, cc);
+			}
+			cc = getRandomIntersectingCircle(circle1);
+			end = intersection(circle1, cc);
+			d.addArc(new Arc(circle1.index, rwidth / 1000., start, end));
 		}
 		return d;
 	}
 
-	/**
-	 * get a random intersection on this circle.
-	 * 
-	 * 
-	 * @param circle1
-	 * @return angle [0,2*PI]
-	 */
-	private double randomIntersection(Circle circle1) {
-		Circle circle2 = getRandomIntersectingCircle(circle1);
+	private double intersection(Circle circle1, Circle circle2) {
 		double b = circle1.radius;
 		double a = circle2.radius;
 		double c = Math.sqrt(Math.pow(circle1.y - circle2.y, 2)
@@ -139,7 +144,7 @@ public class CircleFractal {
 		double d = circle2.y - circle1.y;
 		double beta = Math.acos(Math.abs(d)/c);
 		double alpha = Math.acos((b*b-a*a-c*c)/(-2*a*c));
-		double angle = rand.nextBoolean() ? alpha - beta : alpha + beta;
+		double angle = d > 0 ? alpha - beta : alpha + beta;
 		if(angle >= 2*Math.PI) angle -= Math.PI;
 		if(angle < 0) angle += Math.PI;
 		return angle;
