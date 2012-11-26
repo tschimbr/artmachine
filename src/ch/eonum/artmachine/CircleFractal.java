@@ -94,6 +94,11 @@ public class CircleFractal {
 		return this.possibleWidths;
 	}
 
+	/**
+	 * create a random drawing.
+	 * @param maxArcs
+	 * @return
+	 */
 	public Drawing createRandomDrawing(int maxArcs) {
 		Drawing d = new Drawing();
 		int arcs = this.rand.nextInt(maxArcs) + 1;
@@ -102,5 +107,55 @@ public class CircleFractal {
 					.nextInt(widthList.size())) / 1000., rand.nextDouble() * 2
 					* Math.PI, rand.nextDouble() * 2 * Math.PI));
 		return d;
+	}
+	
+	public Drawing createRandomDrawingWithIntersections(int maxArcs) {
+		Drawing d = new Drawing();
+		int arcs = this.rand.nextInt(maxArcs) + 1;
+		for(int i = 0; i < arcs; i++){
+			int circleIndex = rand.nextInt(circles.size());
+			Circle circle1 = circles.get(circleIndex);
+			double start = randomIntersection(circle1);
+			double end = randomIntersection(circle1);
+			d.addArc(new Arc(circleIndex, widthList.get(rand
+					.nextInt(widthList.size())) / 1000., start, end));
+		}
+		return d;
+	}
+
+	/**
+	 * get a random intersection on this circle.
+	 * 
+	 * 
+	 * @param circle1
+	 * @return angle [0,2*PI]
+	 */
+	private double randomIntersection(Circle circle1) {
+		Circle circle2 = getRandomIntersectingCircle(circle1);
+		double b = circle1.radius;
+		double a = circle2.radius;
+		double c = Math.sqrt(Math.pow(circle1.y - circle2.y, 2)
+				+ Math.pow(circle1.x - circle2.x, 2));
+		double d = circle2.y - circle1.y;
+		double beta = Math.acos(Math.abs(d)/c);
+		double alpha = Math.acos((b*b-a*a-c*c)/(-2*a*c));
+		double angle = rand.nextBoolean() ? alpha - beta : alpha + beta;
+		if(angle >= 2*Math.PI) angle -= Math.PI;
+		if(angle < 0) angle += Math.PI;
+		return angle;
+	}
+
+	private Circle getRandomIntersectingCircle(Circle circle1) {
+		Circle circle = null;
+		double delta = 0.;
+		do {
+			circle = circles.get(rand.nextInt(circles.size()));
+			delta = Math.sqrt(Math.pow(circle1.y - circle.y, 2)
+					+ Math.pow(circle1.x - circle.x, 2));
+		} while (delta > circle.radius + circle1.radius
+				|| delta + Math.min(circle.radius, circle1.radius) < Math.max(
+						circle.radius, circle1.radius)
+						|| circle == circle1);
+		return circle;
 	}
 }

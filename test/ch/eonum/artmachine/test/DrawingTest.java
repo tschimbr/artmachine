@@ -33,12 +33,18 @@ public class DrawingTest {
 	public void testRandomCreation(){
 		CircleFractal cf = new CircleFractal(400, 5, 15, 450, 450);
 		for(int i = 0; i < 100; i++){
-			Drawing rd = cf.createRandomDrawing(150);
+			Drawing rd = cf.createRandomDrawingWithIntersections(150);
 			assertTrue(rd.getArcs().size() > 0);
 			assertTrue(rd.getArcs().size() <= 150);
 			for(Arc each : rd.getArcs()){
 				assertTrue(each.circle >= 0);
 				assertTrue(each.circle < 1529);
+				assertTrue(each.start >= 0);
+				assertTrue(each.start < 2*Math.PI);
+				assertTrue(each.end >= 0);
+				assertTrue(each.end < 2*Math.PI);
+				assertFalse(Double.isNaN(each.end));
+				assertFalse(Double.isNaN(each.start));
 			}
 		}
 	}
