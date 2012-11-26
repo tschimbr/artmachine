@@ -122,7 +122,7 @@ public class CircleFractal {
 		for(int i = 0; i < arcs; i++){
 			Circle circle = circles.get(rand.nextInt(circles.size()));
 			double start = 0.0;
-			if (next == null || rand.nextDouble() < 0.2) {// #TODO genetic
+			if (next == null || rand.nextDouble() < 0.1) {// #TODO genetic
 														// parameter
 				previous = getRandomIntersectingCircle(circle);
 				start = intersection(circle, previous, rand.nextBoolean());
@@ -132,9 +132,19 @@ public class CircleFractal {
 				circle = next;
 				start = intersection(circle, previous, choice);
 			}
-			next = getRandomIntersectingCircle(circle);
+			
 			choice = rand.nextBoolean();
-			end = intersection(circle, next, choice);
+			int f = 0;
+			do {
+				next = getRandomIntersectingCircle(circle);
+				end = intersection(circle, next, choice);
+				f++;
+			} while (f < 10 && Math.abs(start - end) > 10.0 * Math.PI * rand.nextDouble());// #TODO genetic parameter
+			if(start > end){
+				double temp = start;
+				start = end;
+				end = temp;
+			}
 			d.addArc(new Arc(circle.index, rwidth / 1000., start, end));
 			previous = circle;
 		}
@@ -156,6 +166,8 @@ public class CircleFractal {
 		if(f > 0 && d < 0) angle = 2* Math.PI - angle;
 		if(angle >= 2*Math.PI) angle = angle%(2*Math.PI);
 		if(angle < 0.) angle = angle%(2*Math.PI);
+		if(angle >= 2*Math.PI) angle = 1.99*Math.PI;
+		if(angle < 0.) angle = 0.;
 		return angle;
 	}
 
