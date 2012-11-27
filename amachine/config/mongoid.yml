@@ -1,0 +1,25 @@
+defaults: &defaults
+  host: localhost
+  port: 27017
+  databases:
+    primary:
+      database: am_development
+      port: 27017
+  # slaves:
+  #   - host: slave1.local
+  #     port: 27018
+  #   - host: slave2.local
+  #     port: 27019
+
+development:
+  <<: *defaults
+  database: am_development
+
+test:
+  <<: *defaults
+  database: am_test
+
+# set these environment variables on your prod server
+production:
+  <<: *defaults
+  database: am_development
