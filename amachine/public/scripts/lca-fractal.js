@@ -12,7 +12,7 @@ var circles;
 var numCircles;
 var drawFractal;
 
-function fractal(canvasId, df){
+function fractal(canvasId, df, arcs){
 	canvas = document.getElementById(canvasId);
 	context = canvas.getContext('2d');
 

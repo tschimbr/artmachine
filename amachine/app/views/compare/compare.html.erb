@@ -1,8 +1,11 @@
 
 <div style="margin-top: 100px; width: 1250px; margin-left: auto ; margin-right: auto ;">
-  <script src="/scripts/arcs.js" type="text/javascript"></script>
   <script src="/scripts/lca-fractal.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var arcs1 = <%= @drawing1.toJSON().html_safe %>;
+    var arcs2 = <%= @drawing2.toJSON().html_safe %>;
+  </script>
   <canvas id="artmachine1" width="600" height="600"></canvas>
   <canvas id="artmachine2" width="600" height="600"></canvas>
-  <script type="text/javascript">fractal('artmachine1', true); fractal('artmachine2', false);</script>
+  <script type="text/javascript">fractal('artmachine1', false, arcs1); fractal('artmachine2', false, arcs2);</script>
 </div>
