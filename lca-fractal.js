@@ -1,40 +1,56 @@
-var canvas = document.getElementById('artmachine');
-var context = canvas.getContext('2d');
+var canvas;
+var context;
 
-var x = canvas.width / 2;
-var y = canvas.height / 2;
+var x;
+var y;
 
-var radius = 400;
-var width = 15;
-var depth = 5;
-var circleskeys = {};
-var circles = [];
-var numCircles = 0;
+var radius;
+var width;
+var depth;
+var circleskeys;
+var circles;
+var numCircles;
+var drawFractal;
 
-/* clipping */
-context.save();
-context.beginPath();
-context.arc(x, y, radius + width/2-5, 0, 2 * Math.PI, false);
-context.clip();
+function fractal(canvasId){
+	canvas = document.getElementById(canvasId);
+	context = canvas.getContext('2d');
 
-context.strokeStyle = '#BDBDBD';
-context.strokeStyle = 'white';
-/* circles. */
-drawCircle(x, y, radius, depth)
+	x = canvas.width / 2;
+	y = canvas.height / 2;
 
-/* arc drawing. */
-context.strokeStyle = 'black';
+	radius = 250;
+	width = 15;
+	depth = 5;
+	circleskeys = {};
+	circles = [];
+	numCircles = 0;
 
-for(var i in arcs){
-	arc = arcs[i];
-	//if(i < 12) alert(arc);
-	circle = circles[arc.circle];
-	//alert(JSON.stringify(circle, undefined, 2));
-	//alert(JSON.stringify(arc, undefined, 2));
-	context.lineWidth = arc.width;
+	/* clipping */
+	context.save();
 	context.beginPath();
-	context.arc(circle.x, circle.y, circle.r, arc.start, arc.end, false);
-	context.stroke();
+	context.arc(x, y, radius + width/2-5, 0, 2 * Math.PI, false);
+	context.clip();
+
+	context.strokeStyle = '#BDBDBD';
+	drawFractal = false;
+	/* circles. */
+	drawCircle(x, y, radius, depth)
+
+	/* arc drawing. */
+	context.strokeStyle = 'black';
+
+	for(var i in arcs){
+		arc = arcs[i];
+		//if(i < 12) alert(arc);
+		circle = circles[arc.circle];
+		//alert(JSON.stringify(circle, undefined, 2));
+		//alert(JSON.stringify(arc, undefined, 2));
+		context.lineWidth = arc.width;
+		context.beginPath();
+		context.arc(circle.x, circle.y, circle.r, arc.start, arc.end, false);
+		context.stroke();
+	}
 }
 
 //alert(numCircles);
@@ -78,9 +94,11 @@ function drawCircleOnCanvas(cx, cy, cradius, cdepth){
 	c['depth'] = cdepth;
 	circles[numCircles] = c;
 	circleskeys[circle] = numCircles++;
-	context.beginPath();
-	context.arc(cx, cy, cradius, 0.0, 2.0 * Math.PI, false);
-	context.stroke();
+	if(drawFractal){
+		context.beginPath();
+		context.arc(cx, cy, cradius, 0.0, 2.0 * Math.PI, false);
+		context.stroke();
+	}
 }
 
 

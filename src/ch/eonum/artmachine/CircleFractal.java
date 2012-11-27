@@ -139,7 +139,7 @@ public class CircleFractal {
 				next = getRandomIntersectingCircle(circle);
 				end = intersection(circle, next, choice);
 				f++;
-			} while (f < 10 && Math.abs(start - end) > 10.0 * Math.PI * rand.nextDouble());// #TODO genetic parameter
+			} while (f < 10 && Math.abs(start - end) > 2.0 * Math.PI * rand.nextDouble());// #TODO genetic parameter
 			if(start > end){
 				double temp = start;
 				start = end;
