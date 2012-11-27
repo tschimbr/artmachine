@@ -1,7 +1,10 @@
 package ch.eonum.artmachine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Set of arcs and areas describing a drawing on a fractal.
@@ -9,14 +12,25 @@ import java.util.List;
  *
  */
 public class Drawing {
+	private static final String[] PROBABILITIES = {"numArcs", "probNewFragment", "probArcSize"};
 	private List<Arc> arcs;
+	private Map<String, Double> probabilities;
+	private Random rand;
 
-	public Drawing(){
+	public Drawing(int seed){
 		this.setArcs(new ArrayList<Arc>());
+		this.rand = new Random(seed);
+		this.probabilities = new HashMap<String, Double>();
+		for(String each : Drawing.PROBABILITIES)
+			this.probabilities.put(each, rand.nextDouble());
 	}
 	
 	public boolean addArc(Arc arc){
 		return this.arcs.add(arc);
+	}
+	
+	public double getProb(String prob){
+		return this.probabilities.get(prob);
 	}
 
 	public List<Arc> getArcs() {

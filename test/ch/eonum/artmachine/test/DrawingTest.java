@@ -11,7 +11,7 @@ import ch.eonum.artmachine.Drawing;
 public class DrawingTest {
 	@Test
 	public void testJSONOutput(){
-		Drawing d = new Drawing();
+		Drawing d = new Drawing(25);
 		d.addArc(new Arc(12, 3.2, 2.1, 2.2));
 		d.addArc(new Arc(13, 3.3, 2.3, 2.2));
 		

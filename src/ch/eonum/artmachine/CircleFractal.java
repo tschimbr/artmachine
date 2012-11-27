@@ -100,7 +100,7 @@ public class CircleFractal {
 	 * @return
 	 */
 	public Drawing createRandomDrawing(int maxArcs) {
-		Drawing d = new Drawing();
+		Drawing d = new Drawing(rand.nextInt());
 		int arcs = this.rand.nextInt(maxArcs) + 1;
 		for(int i = 0; i < arcs; i++)
 			d.addArc(new Arc(rand.nextInt(circles.size()), widthList.get(rand
@@ -110,8 +110,8 @@ public class CircleFractal {
 	}
 	
 	public Drawing createRandomDrawingWithIntersections(int maxArcs) {
-		Drawing d = new Drawing();
-		int arcs = this.rand.nextInt(maxArcs) + 1;
+		Drawing d = new Drawing(rand.nextInt());
+		int arcs = (int)(maxArcs * d.getProb("numArcs")) + 1;
 		
 		double end = 0.0;
 		boolean choice = false;
@@ -122,8 +122,7 @@ public class CircleFractal {
 		for(int i = 0; i < arcs; i++){
 			Circle circle = circles.get(rand.nextInt(circles.size()));
 			double start = 0.0;
-			if (next == null || rand.nextDouble() < 0.1) {// #TODO genetic
-														// parameter
+			if (next == null || rand.nextDouble() < d.getProb("probNewFragment")/2.) {
 				previous = getRandomIntersectingCircle(circle);
 				start = intersection(circle, previous, rand.nextBoolean());
 				rwidth = widthList.get(rand
@@ -139,7 +138,7 @@ public class CircleFractal {
 				next = getRandomIntersectingCircle(circle);
 				end = intersection(circle, next, choice);
 				f++;
-			} while (f < 10 && Math.abs(start - end) > 2.0 * Math.PI * rand.nextDouble());// #TODO genetic parameter
+			} while (f < 10 && Math.abs(start - end) > d.getProb("probArcSize") + 2.0 * Math.PI * rand.nextDouble());
 			if(start > end){
 				double temp = start;
 				start = end;
