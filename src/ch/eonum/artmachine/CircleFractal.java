@@ -112,7 +112,7 @@ public class CircleFractal {
 		for(int i = 0; i < arcs; i++)
 			d.addArc(new Arc(rand.nextInt(circles.size()), widthList.get(rand
 					.nextInt(widthList.size())) / 1000., rand.nextDouble() * 2
-					* Math.PI, rand.nextDouble() * 2 * Math.PI));
+					* Math.PI, rand.nextDouble() * 2 * Math.PI), 0);
 		return d;
 	}
 
@@ -130,6 +130,7 @@ public class CircleFractal {
 		double rwidth = widthList.get(rand.nextInt(widthList.size()));
 		Circle previous = null;
 		Circle next = null;
+		int sequence = -1;
 		for (int i = 0; i < arcs; i++) {
 			Circle circle = randomCircle(d);
 			double start = 0.0;
@@ -138,6 +139,7 @@ public class CircleFractal {
 				previous = getRandomIntersectingCircle(circle, d);
 				start = intersection(circle, previous, rand.nextBoolean());
 				rwidth = widthList.get(rand.nextInt(widthList.size()));
+				sequence++;
 			} else {
 				circle = next;
 				start = intersection(circle, previous, choice);
@@ -157,7 +159,7 @@ public class CircleFractal {
 				start = end;
 				end = temp;
 			}
-			d.addArc(new Arc(circle.index, rwidth / 1000., start, end));
+			d.addArc(new Arc(circle.index, rwidth / 1000., start, end), sequence);
 			previous = circle;
 		}
 		return d;

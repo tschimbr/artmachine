@@ -15,18 +15,32 @@ public class Drawing {
 	private static final String[] PROBABILITIES = { "numArcs",
 			"probNewFragment", "probArcSize", "circleSizeRatio" };
 	private List<Arc> arcs;
+	/** arcs listed hierarchicaly. all arcs within one list are connected. */
+	private List<List<Arc>> arcsHierarchical;
 	private Map<String, Double> probabilities;
 	private Random rand;
 
 	public Drawing(int seed){
 		this.setArcs(new ArrayList<Arc>());
+		this.arcsHierarchical = new ArrayList<List<Arc>>();
 		this.rand = new Random(seed);
 		this.probabilities = new HashMap<String, Double>();
 		for(String each : Drawing.PROBABILITIES)
 			this.probabilities.put(each, rand.nextDouble());
 	}
 	
-	public boolean addArc(Arc arc){
+	/**
+	 * add an arc. numSequence is the number of the sequence of connected arcs.
+	 * if it does not exist it is created.
+	 * 
+	 * @param arc
+	 * @param numSequence
+	 * @return
+	 */
+	public boolean addArc(Arc arc, int numSequence){
+		if(this.arcsHierarchical.size() < numSequence + 1)
+			this.arcsHierarchical.add(numSequence, new ArrayList<Arc>());
+		this.arcsHierarchical.get(numSequence).add(arc);
 		return this.arcs.add(arc);
 	}
 	
