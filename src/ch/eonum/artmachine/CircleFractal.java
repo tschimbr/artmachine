@@ -131,11 +131,11 @@ public class CircleFractal {
 		Circle previous = null;
 		Circle next = null;
 		for (int i = 0; i < arcs; i++) {
-			Circle circle = circles.get(rand.nextInt(circles.size()));
+			Circle circle = randomCircle(d);
 			double start = 0.0;
 			if (next == null
 					|| rand.nextDouble() < d.getProb("probNewFragment") / 2.) {
-				previous = getRandomIntersectingCircle(circle);
+				previous = getRandomIntersectingCircle(circle, d);
 				start = intersection(circle, previous, rand.nextBoolean());
 				rwidth = widthList.get(rand.nextInt(widthList.size()));
 			} else {
@@ -146,7 +146,7 @@ public class CircleFractal {
 			choice = rand.nextBoolean();
 			int f = 0;
 			do {
-				next = getRandomIntersectingCircle(circle);
+				next = getRandomIntersectingCircle(circle, d);
 				end = intersection(circle, next, choice);
 				f++;
 			} while (f < 10
@@ -161,6 +161,13 @@ public class CircleFractal {
 			previous = circle;
 		}
 		return d;
+	}
+
+	private Circle randomCircle(Drawing d) {
+		List<Circle> cd = this.circlesByDepth.get(rand.nextInt(circlesByDepth.size()));
+		if(d.getProb("circleSizeRatio") < rand.nextDouble())
+			cd = circles;
+		return cd.get(rand.nextInt(cd.size()));
 	}
 
 	/**
@@ -202,11 +209,11 @@ public class CircleFractal {
 	 * @param circle1
 	 * @return
 	 */
-	private Circle getRandomIntersectingCircle(Circle circle1) {
+	private Circle getRandomIntersectingCircle(Circle circle1, Drawing d) {
 		Circle circle = null;
 		double delta = 0.;
 		do {
-			circle = circles.get(rand.nextInt(circles.size()));
+			circle = randomCircle(d);
 			delta = Math.sqrt(Math.pow(circle1.y - circle.y, 2)
 					+ Math.pow(circle1.x - circle.x, 2));
 		} while (delta > circle.radius + circle1.radius

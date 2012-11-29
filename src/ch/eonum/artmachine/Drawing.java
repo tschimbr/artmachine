@@ -12,7 +12,8 @@ import java.util.Random;
  *
  */
 public class Drawing {
-	private static final String[] PROBABILITIES = {"numArcs", "probNewFragment", "probArcSize"};
+	private static final String[] PROBABILITIES = { "numArcs",
+			"probNewFragment", "probArcSize", "circleSizeRatio" };
 	private List<Arc> arcs;
 	private Map<String, Double> probabilities;
 	private Random rand;
