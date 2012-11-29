@@ -47,10 +47,15 @@ public class CircleFractal {
 	}
 
 	private void makeCircle(double cx, double cy, double cradius, int cdepth) {
-		if(cdepth == 0) return;
-		String circle = Math.floor(cx*100) + "-" + Math.floor(cy*100) + "-" + Math.floor(cradius*100);
-		if(circleskeys.contains(circle)) return;
-		if(Math.sqrt((cy - y)*(cy - y)+(cx - x)*(cx - x)) > cradius + radius) return;
+		if (cdepth == 0)
+			return;
+		String circle = Math.floor(cx * 100) + "-" + Math.floor(cy * 100) + "-"
+				+ Math.floor(cradius * 100);
+		if (circleskeys.contains(circle))
+			return;
+		if (Math.sqrt((cy - y) * (cy - y) + (cx - x) * (cx - x)) > cradius
+				+ radius)
+			return;
 
 		double lineWidth = width / (Math.pow(2.0, depth-cdepth+2));
 		this.possibleWidths.add((int)(lineWidth*1000.));
@@ -74,8 +79,10 @@ public class CircleFractal {
 	}
 
 	private void storeCircle(double cx, double cy, double cradius, int cdepth) {
-		String circle = Math.floor(cx*100) + "-" + Math.floor(cy*100) + "-" + Math.floor(cradius*100);
-		if(circleskeys.contains(circle)) return;
+		String circle = Math.floor(cx * 100) + "-" + Math.floor(cy * 100) + "-"
+				+ Math.floor(cradius * 100);
+		if (circleskeys.contains(circle))
+			return;
 		Circle c = new Circle(cx, cy, cradius, cdepth, circles.size());
 		circles.add(c);
 		circlesByDepth.get(depth - cdepth).add(c);
@@ -108,38 +115,44 @@ public class CircleFractal {
 					* Math.PI, rand.nextDouble() * 2 * Math.PI));
 		return d;
 	}
-	
+
+	/**
+	 * Create a semi-random Drawing. Many circles intersect.
+	 * @param maxArcs
+	 * @return
+	 */
 	public Drawing createRandomDrawingWithIntersections(int maxArcs) {
 		Drawing d = new Drawing(rand.nextInt());
-		int arcs = (int)(maxArcs * d.getProb("numArcs")) + 1;
-		
+		int arcs = (int) (maxArcs * d.getProb("numArcs")) + 1;
+
 		double end = 0.0;
 		boolean choice = false;
-		double rwidth = widthList.get(rand
-				.nextInt(widthList.size()));
+		double rwidth = widthList.get(rand.nextInt(widthList.size()));
 		Circle previous = null;
 		Circle next = null;
-		for(int i = 0; i < arcs; i++){
+		for (int i = 0; i < arcs; i++) {
 			Circle circle = circles.get(rand.nextInt(circles.size()));
 			double start = 0.0;
-			if (next == null || rand.nextDouble() < d.getProb("probNewFragment")/2.) {
+			if (next == null
+					|| rand.nextDouble() < d.getProb("probNewFragment") / 2.) {
 				previous = getRandomIntersectingCircle(circle);
 				start = intersection(circle, previous, rand.nextBoolean());
-				rwidth = widthList.get(rand
-						.nextInt(widthList.size()));
+				rwidth = widthList.get(rand.nextInt(widthList.size()));
 			} else {
 				circle = next;
 				start = intersection(circle, previous, choice);
 			}
-			
+
 			choice = rand.nextBoolean();
 			int f = 0;
 			do {
 				next = getRandomIntersectingCircle(circle);
 				end = intersection(circle, next, choice);
 				f++;
-			} while (f < 10 && Math.abs(start - end) > d.getProb("probArcSize") + 2.0 * Math.PI * rand.nextDouble());
-			if(start > end){
+			} while (f < 10
+					&& Math.abs(start - end) > d.getProb("probArcSize") + 2.0
+							* Math.PI * rand.nextDouble());
+			if (start > end) {
 				double temp = start;
 				start = end;
 				end = temp;
@@ -150,6 +163,18 @@ public class CircleFractal {
 		return d;
 	}
 
+	/**
+	 * get the intersection point of two circles. An angle on the first circle
+	 * is returned. east => 0, south => 0.5 PI, west => PI, north => 1.5 PI. If
+	 * the circles do not intersect, are the same or intersect at only one
+	 * point, the behavior of this method is not defined. choice: pick the
+	 * first or the second intersection
+	 * 
+	 * @param circle1
+	 * @param circle2
+	 * @param choice
+	 * @return
+	 */
 	private double intersection(Circle circle1, Circle circle2, boolean choice) {
 		double a = circle1.radius;
 		double b = circle2.radius;
@@ -170,6 +195,13 @@ public class CircleFractal {
 		return angle;
 	}
 
+	/**
+	 * choose a random circle from the fractal which intersects the given circle
+	 * at exactly two points.
+	 * 
+	 * @param circle1
+	 * @return
+	 */
 	private Circle getRandomIntersectingCircle(Circle circle1) {
 		Circle circle = null;
 		double delta = 0.;
