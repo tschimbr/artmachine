@@ -46,6 +46,13 @@ public class CircleFractal {
 			widthList.add(each);
 	}
 
+	/**
+	 * recursive function for the creation of the circle fractal.
+	 * @param cx current x circle center
+	 * @param cy current y circle center
+	 * @param cradius current circle radius
+	 * @param cdepth current fractal depth
+	 */
 	private void makeCircle(double cx, double cy, double cradius, int cdepth) {
 		if (cdepth == 0)
 			return;
@@ -127,7 +134,7 @@ public class CircleFractal {
 
 		double end = 0.0;
 		boolean choice = false;
-		double rwidth = widthList.get(rand.nextInt(widthList.size()));
+		double rwidth = getRandomWidth(d);
 		Circle previous = null;
 		Circle next = null;
 		int sequence = -1;
@@ -138,7 +145,7 @@ public class CircleFractal {
 					|| rand.nextDouble() < d.getProb("probNewFragment") / 2.) {
 				previous = getRandomIntersectingCircle(circle, d);
 				start = intersection(circle, previous, rand.nextBoolean());
-				rwidth = widthList.get(rand.nextInt(widthList.size()));
+				rwidth = getRandomWidth(d);
 				sequence++;
 			} else {
 				circle = next;
@@ -165,10 +172,39 @@ public class CircleFractal {
 		return d;
 	}
 
+	/**
+	 * get a random width according the probability distribution of the given
+	 * drawing.
+	 * 
+	 * @param d
+	 * @return
+	 */
+	private double getRandomWidth(Drawing d) {
+		int maxWidth = -1;
+		double max = Double.NEGATIVE_INFINITY;
+		for(int i = 0; i < widthList.size(); i++){
+			double prob = d.getProb("widthProb" + i) * rand.nextDouble();
+			if(prob > max){
+				max = prob;
+				maxWidth = i;
+			}
+		}
+		return widthList.get(maxWidth);
+	}
+
 	private Circle randomCircle(Drawing d) {
-		List<Circle> cd = this.circlesByDepth.get(rand.nextInt(circlesByDepth.size()));
 		if(d.getProb("circleSizeRatio") < rand.nextDouble())
-			cd = circles;
+			circles.get(rand.nextInt(circles.size()));
+		int maxDepth = -1;
+		double max = Double.NEGATIVE_INFINITY;
+		for(int i = 0; i < circlesByDepth.size(); i++){
+			double prob = d.getProb("depthProb" + i) * rand.nextDouble();
+			if(prob > max){
+				max = prob;
+				maxDepth = i;
+			}
+		}
+		List<Circle> cd = this.circlesByDepth.get(maxDepth);
 		return cd.get(rand.nextInt(cd.size()));
 	}
 
@@ -218,10 +254,9 @@ public class CircleFractal {
 			circle = randomCircle(d);
 			delta = Math.sqrt(Math.pow(circle1.y - circle.y, 2)
 					+ Math.pow(circle1.x - circle.x, 2));
-		} while (delta > circle.radius + circle1.radius
-				|| delta + Math.min(circle.radius, circle1.radius) < Math.max(
-						circle.radius, circle1.radius)
-						|| circle == circle1);
+		} while (delta >= circle.radius + circle1.radius
+				|| delta + Math.min(circle.radius, circle1.radius) <= Math.max(
+						circle.radius, circle1.radius) || circle == circle1);
 		return circle;
 	}
 }

@@ -44,7 +44,16 @@ public class Drawing {
 		return this.arcs.add(arc);
 	}
 	
+	/**
+	 * get the probability of some creational feature.
+	 * lazy random initialization if not present.
+	 * 
+	 * @param prob
+	 * @return
+	 */
 	public double getProb(String prob){
+		if(!this.probabilities.containsKey(prob))
+			this.probabilities.put(prob, rand.nextDouble());
 		return this.probabilities.get(prob);
 	}
 

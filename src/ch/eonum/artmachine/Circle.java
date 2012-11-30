@@ -15,5 +15,20 @@ public class Circle {
 		this.depth = depth;
 		this.index = index;
 	}
+	
+	public String toJSON() {
+		return "{\n" + 
+				"  \"x\": " + x + ",\n" + 
+				"  \"y\": " + y + ",\n" + 
+				"  \"radius\": " + radius + ",\n" + 
+				"  \"depth\": " + depth + ",\n" + 
+				"  \"index\": " + index + "\n" + 
+				"}";
+	}
+	
+	@Override
+	public String toString(){
+		return toJSON();
+	}
 
 }
