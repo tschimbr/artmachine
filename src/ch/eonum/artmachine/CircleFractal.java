@@ -144,19 +144,19 @@ public class CircleFractal {
 			if (next == null
 					|| rand.nextDouble() < d.getProb("probNewFragment") / 2.) {
 				previous = getRandomIntersectingCircle(circle, d);
-				start = intersection(circle, previous, rand.nextBoolean());
+				start = circle.intersection(previous, rand.nextBoolean());
 				rwidth = getRandomWidth(d);
 				sequence++;
 			} else {
 				circle = next;
-				start = intersection(circle, previous, choice);
+				start = circle.intersection(previous, choice);
 			}
 
 			choice = rand.nextBoolean();
 			int f = 0;
 			do {
 				next = getRandomIntersectingCircle(circle, d);
-				end = intersection(circle, next, choice);
+				end = circle.intersection(next, choice);
 				f++;
 			} while (f < 10
 					&& Math.abs(start - end) > d.getProb("probArcSize") + 2.0
@@ -192,6 +192,13 @@ public class CircleFractal {
 		return widthList.get(maxWidth);
 	}
 
+	/**
+	 * get a random circle according the probability distribution of the given
+	 * drawing.
+	 * 
+	 * @param d
+	 * @return
+	 */
 	private Circle randomCircle(Drawing d) {
 		if(d.getProb("circleSizeRatio") < rand.nextDouble())
 			circles.get(rand.nextInt(circles.size()));
@@ -206,38 +213,6 @@ public class CircleFractal {
 		}
 		List<Circle> cd = this.circlesByDepth.get(maxDepth);
 		return cd.get(rand.nextInt(cd.size()));
-	}
-
-	/**
-	 * get the intersection point of two circles. An angle on the first circle
-	 * is returned. east => 0, south => 0.5 PI, west => PI, north => 1.5 PI. If
-	 * the circles do not intersect, are the same or intersect at only one
-	 * point, the behavior of this method is not defined. choice: pick the
-	 * first or the second intersection
-	 * 
-	 * @param circle1
-	 * @param circle2
-	 * @param choice
-	 * @return
-	 */
-	private double intersection(Circle circle1, Circle circle2, boolean choice) {
-		double a = circle1.radius;
-		double b = circle2.radius;
-		double c = Math.sqrt(Math.pow(circle1.y - circle2.y, 2)
-				+ Math.pow(circle1.x - circle2.x, 2));
-		double d = circle2.y - circle1.y;
-		double f = circle2.x - circle1.x;
-		double beta = Math.asin(Math.abs(d)/c);
-		double alpha = Math.acos((b*b-a*a-c*c)/(-2*a*c));
-		double angle = choice ? beta - alpha : beta + alpha;
-		if(f < 0 && d > 0) angle = Math.PI - angle;
-		if(f < 0 && d < 0) angle = Math.PI + angle;
-		if(f > 0 && d < 0) angle = 2* Math.PI - angle;
-		if(angle >= 2*Math.PI) angle = angle%(2*Math.PI);
-		if(angle < 0.) angle = angle%(2*Math.PI);
-		if(angle >= 2*Math.PI) angle = 1.99*Math.PI;
-		if(angle < 0.) angle = 0.;
-		return angle;
 	}
 
 	/**
