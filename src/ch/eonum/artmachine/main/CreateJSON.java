@@ -14,7 +14,7 @@ public class CreateJSON {
 		Drawing rd = cf.createRandomDrawingWithIntersections(300);
 		
 		PrintStream ps = new PrintStream(new File("arcs.js"));
-		ps.print("var arcs = " + rd.toJSON());
+		ps.print("var arcs = " + rd.arcsToJSON());
 		ps.close();
 	}
 

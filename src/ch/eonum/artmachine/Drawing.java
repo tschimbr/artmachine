@@ -1,10 +1,16 @@
 package ch.eonum.artmachine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 /**
  * Set of arcs and areas describing a drawing on a fractal.
@@ -65,12 +71,73 @@ public class Drawing {
 		this.arcs = arcs;
 	}
 
-	public String toJSON() {
+	public String arcsToJSON() {
+		return arcsToJSON(arcs);
+	}
+
+	private String arcsToJSON(List<Arc> arcList) {
 		String json ="[";
-		for(int i = 0; i < arcs.size() - 1; i++)
-			json += arcs.get(i).toJSON() + ",\n";
-		json += arcs.get(arcs.size() - 1).toJSON();
+		for(int i = 0; i < arcList.size() - 1; i++)
+			json += arcList.get(i).toJSON() + ",\n";
+		json += arcList.get(arcList.size() - 1).toJSON();
 		return json + "]";
+	}
+
+	public String metaToJSON() {
+		String json = "{\n";
+		String[] probs = probabilities.keySet().toArray(new String[1]);
+		for(int i = 0; i < probs.length - 1; i++)
+			json += "  \"" + probs[i] + "\": " + probabilities.get(probs[i]) + ",\n";
+		json += "  \"" + probs[probs.length-1] + "\": " + probabilities.get(probs[probs.length-1]);
+		return json + "\n}";
+	}
+
+	public String arcsToJSONHierarchical() {
+		String json ="[";
+		for(int i = 0; i < this.arcsHierarchical.size() - 1; i++)
+			json += arcsToJSON(arcsHierarchical.get(i)) + ", ";
+		json += arcsToJSON(arcsHierarchical.get(arcsHierarchical.size() - 1));
+		return json + "]";
+	}
+
+	public static Drawing createFromJSON(String arcsJSON,
+			String metaJSON, int seed) throws IOException {
+		Drawing d = new Drawing(seed);
+		ObjectMapper mapper = new ObjectMapper();
+		d.loadArcs(mapper.readValue(arcsJSON, new TypeReference<List<Object>>() { }));
+		d.loadMeta(mapper.readValue(metaJSON, new TypeReference<Map<String, Object>>() { }));
+		return d;
+	}
+
+	private void loadMeta(Object readValue) {
+		@SuppressWarnings("unchecked")
+		Map<String, Double> meta = (Map<String, Double>) readValue;
+		this.probabilities = meta;
+	}
+
+	/**
+	 * load arcs from parsed json.
+	 * @param readValue
+	 */
+	@SuppressWarnings("unchecked")
+	private void loadArcs(Object value) {
+		List<List<Map<String, Object>>> sequences = (List<List<Map<String, Object>>>) value;
+		this.arcs = new ArrayList<Arc>();
+		this.arcsHierarchical = new ArrayList<List<Arc>>();
+		for(List<Map<String, Object>> seq : sequences){
+			ArrayList<Arc> cList = new ArrayList<Arc>();
+			this.arcsHierarchical.add(cList);
+			for(Map<String, Object> arcMap : seq){
+				double end = (Double) arcMap.get("end");
+				double start = (Double) arcMap.get("start");
+				double width = (Double) arcMap.get("width");
+				int circle = (Integer) arcMap.get("circle");
+				Arc arc = new Arc(circle, width, start, end);
+				cList.add(arc);
+				arcs.add(arc);
+			}
+		}
+		
 	}
 
 }
