@@ -1,10 +1,18 @@
 package ch.eonum.artmachine;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 
 /**
  * circle fractal. ground structure for arcs and areas.
@@ -233,5 +241,22 @@ public class CircleFractal {
 				|| delta + Math.min(circle.radius, circle1.radius) <= Math.max(
 						circle.radius, circle1.radius) || circle == circle1);
 		return circle;
+	}
+	
+	public void createInitialRandomCases(int numCases, int maxArcs, String dbName, String host, String collection) throws IOException, RuntimeException{
+		Mongo m = new Mongo( host );
+		DB db = m.getDB( dbName );
+		DBCollection drawings = db.getCollection( collection );
+		
+		for(int i = 0; i < numCases; i++){
+			BasicDBObject drawing = new BasicDBObject();
+			Drawing d = this.createRandomDrawingWithIntersections(maxArcs);
+			drawing.append("arcs", d.arcsToJSON());
+			drawing.append("arcsHierarchical", d.arcsToJSONHierarchical());
+			drawing.append("meta", d.metaToJSON());
+			drawings.insert(drawing);
+		}
+		
+		m.close();
 	}
 }
