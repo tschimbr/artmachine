@@ -5,7 +5,7 @@
     var arcs1 = <%= @drawing1.arcs.html_safe %>;
     var arcs2 = <%= @drawing2.arcs.html_safe %>;
   </script>
-  <canvas id="artmachine1" width="600" height="600"></canvas>
-  <canvas id="artmachine2" width="600" height="600"></canvas>
+  <%= link_to raw("<canvas id=\"artmachine1\" width=\"600\" height=\"600\"></canvas>"), { :action => "compare", :id => @drawing2.id }  %>
+  <%= link_to raw("<canvas id=\"artmachine2\" width=\"600\" height=\"600\"></canvas>"), { :action => "compare", :id => @drawing1.id }  %>
   <script type="text/javascript">fractal('artmachine1', false, arcs1); fractal('artmachine2', false, arcs2);</script>
 </div>

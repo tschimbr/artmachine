@@ -8,6 +8,10 @@ class CompareController < ApplicationController
   @@cf = CircleFractal.new(400, 5, 15, 450, 450);
   
   def compare
+    if(params[:id] != nil)
+      Rdrawing.find(params[:id]).delete
+    end
+
     @@cf.createInitialRandomCases(100, 300,
 			"am_development", "localhost", "rdrawings") if Rdrawing.count < 100
 		@drawing1 = Rdrawing.skip(rand * Rdrawing.count-1).first
