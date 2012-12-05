@@ -381,8 +381,7 @@ public class CircleFractal {
 			if(generation < newRandom) {
 				d = new Drawing(rand.nextInt());
 				d.putProb("newRandom", 1.0);
-			}
-			else if (generation < newRandom + mutations) {
+			} else if (generation < newRandom + mutations) {
 				d = new Drawing(oldDrawings.get(rand.nextInt(oldDrawings.size())), rand.nextInt());
 				d.mutateMeta();
 				d.putProb("mutation", 1.0);

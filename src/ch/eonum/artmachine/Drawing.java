@@ -3,6 +3,7 @@ package ch.eonum.artmachine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -169,7 +170,8 @@ public class Drawing {
 	}
 
 	public void mutateMeta() {
-		for(String key : this.probabilities.keySet()){
+		Set<String> keys = new HashSet<String>(this.probabilities.keySet());
+		for(String key : keys){
 			if(rand.nextDouble() < this.getProb("mutationProb"))
 				this.putProb(key, rand.nextDouble());
 		}
