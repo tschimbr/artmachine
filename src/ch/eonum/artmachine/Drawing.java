@@ -34,6 +34,19 @@ public class Drawing {
 	}
 	
 	/**
+	 * copy the probabilities of drawing.
+	 * 
+	 * @param drawing
+	 * @param seed
+	 */
+	public Drawing(Drawing drawing, int seed) {
+		this.setArcs(new ArrayList<Arc>());
+		this.arcsHierarchical = new ArrayList<List<Arc>>();
+		this.rand = new Random(seed);
+		this.probabilities = new HashMap<String, Double>(drawing.probabilities);
+	}
+
+	/**
 	 * add an arc. numSequence is the number of the sequence of connected arcs.
 	 * if it does not exist it is created.
 	 * 
@@ -136,6 +149,33 @@ public class Drawing {
 			}
 		}
 		
+	}
+
+	/**
+	 * crossover meta parameters.
+	 * @param d2
+	 * @return
+	 */
+	public Drawing crossover(Drawing d2) {
+		Drawing d = new Drawing(rand.nextInt());
+		for(String key : this.probabilities.keySet()){
+			if(rand.nextBoolean())
+				d.probabilities.put(key, this.getProb(key));
+			else
+				d.probabilities.put(key, d2.getProb(key));
+		}
+		return d;
+	}
+
+	public void mutateMeta() {
+		for(String key : this.probabilities.keySet()){
+			if(rand.nextDouble() < this.getProb("mutationProb"))
+				this.putProb(key, rand.nextDouble());
+		}
+	}
+
+	public void putProb(String key, double value) {
+		this.probabilities.put(key, value);
 	}
 
 }

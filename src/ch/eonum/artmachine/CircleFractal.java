@@ -10,6 +10,8 @@ import java.util.Set;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
 /**
@@ -128,14 +130,8 @@ public class CircleFractal {
 					* Math.PI, rand.nextDouble() * 2 * Math.PI), 0);
 		return d;
 	}
-
-	/**
-	 * Create a semi-random drawing. Many circles intersect.
-	 * @param maxArcs
-	 * @return
-	 */
-	public Drawing createRandomDrawingWithIntersections(int maxArcs) {
-		Drawing d = new Drawing(rand.nextInt());
+	
+	private Drawing createRandomDrawingWithIntersections(Drawing d, int maxArcs) {
 		int arcs = (int) (maxArcs * d.getProb("numArcs")) + 1;
 
 		double end = 0.0;
@@ -176,6 +172,16 @@ public class CircleFractal {
 			previous = circle;
 		}
 		return d;
+	}
+
+	/**
+	 * Create a semi-random drawing. Many circles intersect.
+	 * @param maxArcs
+	 * @return
+	 */
+	public Drawing createRandomDrawingWithIntersections(int maxArcs) {
+		Drawing d = new Drawing(rand.nextInt());
+		return this.createRandomDrawingWithIntersections(d, maxArcs);
 	}
 
 	/**
@@ -249,6 +255,7 @@ public class CircleFractal {
 	 *            number of drawings to be generated
 	 * @param maxArcs
 	 *            maximum number of arcs for each drawing
+	 * @param drawings 
 	 * @param dbName
 	 *            mongo db name
 	 * @param host
@@ -258,12 +265,8 @@ public class CircleFractal {
 	 * @throws IOException
 	 * @throws RuntimeException
 	 */
-	public void createInitialRandomCases(int numCases, int maxArcs,
-			String dbName, String host, String collection) throws IOException,
+	public void createInitialRandomDrawings(int numCases, int maxArcs, DBCollection drawings) throws IOException,
 			RuntimeException {
-		Mongo m = new Mongo(host);
-		DB db = m.getDB(dbName);
-		DBCollection drawings = db.getCollection(collection);
 
 		for (int i = 0; i < numCases; i++) {
 			BasicDBObject drawing = new BasicDBObject();
@@ -273,7 +276,102 @@ public class CircleFractal {
 			drawing.append("meta", d.metaToJSON());
 			drawings.insert(drawing);
 		}
-
+	}
+	
+	/**
+	 * create as many drawings until we have numDrawings drawings. if we have
+	 * some drawings in the database, create new ones by geneticaly compose new
+	 * drawings from the old. if not, create some intial random drawings.
+	 * 
+	 * @param numDrawings
+	 *            number of drawings to be generated
+	 * @param maxArcs
+	 *            maximum number of arcs for each drawing
+	 * @param dbName
+	 *            mongo db name
+	 * @param host
+	 *            host name
+	 * @param collection
+	 *            mongodb collection name
+	 * @throws IOException
+	 * @throws RuntimeException
+	 */
+	public void makeDrawings(int numDrawings, int maxArcs,
+			String dbName, String host, String collection) throws IOException,
+			RuntimeException {
+		Mongo m = new Mongo(host);
+		DB db = m.getDB(dbName);
+		DBCollection drawings = db.getCollection(collection);
+		long count = drawings.getCount();
+		if(count <= 0)
+			createInitialRandomDrawings(numDrawings, maxArcs, drawings);
+		else {
+			List<Drawing> oldDrawings = new ArrayList<Drawing>();
+			DBCursor cursor = drawings.find();
+			while (cursor.hasNext()){
+				DBObject bdo = cursor.next();
+				oldDrawings.add(Drawing.createFromJSON(
+						bdo.get("arcsHierarchical").toString(), bdo.get("meta")
+								.toString(), rand.nextInt()));
+			}
+			cursor.close();
+			List<Drawing> newDrawings = makeDrawings(oldDrawings, numDrawings - count, maxArcs);
+			for(Drawing d : newDrawings){
+				BasicDBObject drawing = new BasicDBObject();
+				drawing.append("arcs", d.arcsToJSON());
+				drawing.append("arcsHierarchical", d.arcsToJSONHierarchical());
+				drawing.append("meta", d.metaToJSON());
+				drawings.insert(drawing);
+			}
+		}
+		
 		m.close();
+	}
+
+	private List<Drawing> makeDrawings(List<Drawing> oldDrawings, long numDrawingsToGenerate, int maxArcs) {
+		List<Drawing> newDrawings = new ArrayList<Drawing>();
+		
+		double newRandom = 0.0;
+		double crossover = 0.0;
+		double mutations = 0.0;
+		
+		for(Drawing old : oldDrawings){
+			newRandom += old.getProb("newRandom");
+			crossover += old.getProb("crossover");
+			mutations += old.getProb("mutation");
+		}
+		
+		double total = newRandom + crossover + mutations;
+		newRandom /= total;
+		crossover /= total;
+		mutations /= total;
+		newRandom = Math.max(0.1, newRandom);
+		newRandom = Math.min(0.9, newRandom);
+		crossover = Math.max(0.1, crossover);
+		crossover = Math.min(0.9, crossover);
+		mutations = Math.max(0.1, mutations);
+		mutations = Math.min(0.9, mutations);
+		
+		for(int i = 0; i < numDrawingsToGenerate; i++){
+			double generation = rand.nextDouble();
+			Drawing d = null;
+			if(generation < newRandom) {
+				d = new Drawing(rand.nextInt());
+				d.putProb("newRandom", 1.0);
+			}
+			else if (generation < newRandom + mutations) {
+				d = new Drawing(oldDrawings.get(rand.nextInt(oldDrawings.size())), rand.nextInt());
+				d.mutateMeta();
+				d.putProb("mutation", 1.0);
+			} else {
+				Drawing d1 = oldDrawings.get(rand.nextInt(oldDrawings.size()));
+				Drawing d2 = oldDrawings.get(rand.nextInt(oldDrawings.size()));
+				d = d1.crossover(d2);
+				d.putProb("crossover", 1.0);
+			}
+			
+			newDrawings.add(this.createRandomDrawingWithIntersections(d, maxArcs));
+		}
+		return newDrawings;
 	}
 }
