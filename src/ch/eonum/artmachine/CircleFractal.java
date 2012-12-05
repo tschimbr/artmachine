@@ -2,8 +2,10 @@ package ch.eonum.artmachine;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -34,6 +36,7 @@ public class CircleFractal {
 	private Set<Integer> possibleWidths;
 	private List<Integer> widthList;
 	private Random rand;
+	private int generation;
 
 	public CircleFractal(int radius, int depth, int width, int x, int y) {
 		this.radius = radius;
@@ -52,6 +55,7 @@ public class CircleFractal {
 		this.makeCircle(x, y, radius, depth);
 		for(Integer each : possibleWidths)
 			widthList.add(each);
+		generation = 0;
 	}
 
 	/**
@@ -315,6 +319,9 @@ public class CircleFractal {
 								.toString(), rand.nextInt()));
 			}
 			cursor.close();
+			BasicDBObject bdo = createGenerationStatistics(oldDrawings);
+			DBCollection stats = db.getCollection("generationstats");
+			stats.insert(bdo);
 			List<Drawing> newDrawings = makeDrawings(oldDrawings, numDrawings - count, maxArcs);
 			for(Drawing d : newDrawings){
 				BasicDBObject drawing = new BasicDBObject();
@@ -326,6 +333,22 @@ public class CircleFractal {
 		}
 		
 		m.close();
+	}
+
+	private BasicDBObject createGenerationStatistics(List<Drawing> oldDrawings) {
+		Map<String, Double> stats = new HashMap<String, Double>();
+		for(Drawing d : oldDrawings)
+			for(String key : d.getAllProbabilities())
+				if(stats.containsKey(key))
+					stats.put(key, stats.get(key) + d.getProb(key));
+				else
+					stats.put(key, d.getProb(key));
+		
+		BasicDBObject bdo = new BasicDBObject();
+		bdo.put("generation", generation++);
+		for(String key : stats.keySet())
+			bdo.put(key, stats.get(key) / oldDrawings.size());
+		return bdo;
 	}
 
 	private List<Drawing> makeDrawings(List<Drawing> oldDrawings, long numDrawingsToGenerate, int maxArcs) {

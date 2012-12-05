@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -176,6 +177,10 @@ public class Drawing {
 
 	public void putProb(String key, double value) {
 		this.probabilities.put(key, value);
+	}
+
+	public Set<String> getAllProbabilities() {
+		return this.probabilities.keySet();
 	}
 
 }
