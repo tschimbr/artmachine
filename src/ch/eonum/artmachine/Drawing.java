@@ -150,7 +150,6 @@ public class Drawing {
 				arcs.add(arc);
 			}
 		}
-		
 	}
 
 	/**

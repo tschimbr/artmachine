@@ -17,4 +17,8 @@ class CompareController < ApplicationController
 		@drawing1 = Rdrawing.skip(rand * Rdrawing.count-1).first
     @drawing2 = Rdrawing.skip(rand * Rdrawing.count-1).first
   end
+
+  def stats
+    @stats = Generationstat.all.order_by([[ :generation, :asc ]])
+  end
 end

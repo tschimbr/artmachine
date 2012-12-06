@@ -1,0 +1,7 @@
+
+<% for stat in @stats do %>
+  <% stat.attributes.each do |attr_name, value| %>
+    <%= attr_name + ": " + value.to_s.strip + "\t" %>
+  <% end %>
+  <br/>
+<% end %>
