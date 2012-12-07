@@ -20,5 +20,6 @@ class CompareController < ApplicationController
 
   def stats
     @stats = Generationstat.all.order_by([[ :generation, :asc ]])
+    @last = @stats.last
   end
 end

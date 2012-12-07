@@ -1,7 +1,26 @@
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          <%= @stats.first.header.html_safe %>,
+          <% for stat in @stats do %>
+            <%= stat.statvalues(@stats.first.abs).html_safe %>,
+          <% end %>
+            <%= @last.statvalues(@stats.first.abs).html_safe %>
+        ]);
 
-<% for stat in @stats do %>
-  <% stat.attributes.each do |attr_name, value| %>
-    <%= attr_name + ": " + value.to_s.strip + "\t" %>
-  <% end %>
-  <br/>
-<% end %>
+        var options = {
+          title: 'Generation statistics'
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+ </script>
+
+
+
+
+<div id="chart_div" style="width: 1200px; height: 500px;"></div>
