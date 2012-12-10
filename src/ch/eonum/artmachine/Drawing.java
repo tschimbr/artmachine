@@ -157,7 +157,7 @@ public class Drawing {
 	 * @param d2
 	 * @return
 	 */
-	public Drawing crossover(Drawing d2) {
+	public Drawing crossoverMeta(Drawing d2) {
 		Drawing d = new Drawing(rand.nextInt());
 		for(String key : this.probabilities.keySet()){
 			if(rand.nextBoolean())
@@ -182,6 +182,28 @@ public class Drawing {
 
 	public Set<String> getAllProbabilities() {
 		return this.probabilities.keySet();
+	}
+
+	public void mutate() {
+		this.mutateMeta();
+	}
+
+	public Drawing crossover(Drawing d2) {
+		Drawing newD =  this.crossoverMeta(d2);
+		List<List<Arc>> arcsLists = this.arcsHierarchical;
+		arcsLists.addAll(d2.arcsHierarchical);
+		newD.arcsHierarchical = new ArrayList<List<Arc>>();
+		newD.arcs = new ArrayList<Arc>();
+		int i = 0;
+		for(List<Arc> each : arcsLists){
+			if(rand.nextBoolean()){
+				for(Arc arc : each)
+					newD.addArc(arc, i);
+				i++;
+			}
+		}
+		
+		return newD;
 	}
 
 }
