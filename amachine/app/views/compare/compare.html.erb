@@ -7,5 +7,7 @@
   </script>
   <%= link_to raw("<canvas id=\"artmachine1\" width=\"600\" height=\"600\"></canvas>"), { :action => "compare", :id => @drawing2.id }  %>
   <%= link_to raw("<canvas id=\"artmachine2\" width=\"600\" height=\"600\"></canvas>"), { :action => "compare", :id => @drawing1.id }  %>
+  <p style="text-align: center"><%= link_to "Take Both", { :action => "compare"}  %><br/>
+  <%= link_to "Take None", { :action => "compare", :id => @drawing1.id.to_s + "|" + @drawing2.id.to_s}  %></p>
   <script type="text/javascript">fractal('artmachine1', false, arcs1); fractal('artmachine2', false, arcs2);</script>
 </div>
