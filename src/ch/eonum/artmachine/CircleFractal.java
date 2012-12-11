@@ -38,7 +38,7 @@ public class CircleFractal {
 	private Random rand;
 	private int generation;
 
-	public CircleFractal(int radius, int depth, int width, int x, int y) {
+	public CircleFractal(int radius, int depth, int width, int x, int y, int generation) {
 		this.radius = radius;
 		this.depth = depth;
 		this.width = width;
@@ -55,7 +55,7 @@ public class CircleFractal {
 		this.makeCircle(x, y, radius, depth);
 		for(Integer each : possibleWidths)
 			widthList.add(each);
-		generation = 0;
+		this.generation = generation;
 	}
 
 	/**

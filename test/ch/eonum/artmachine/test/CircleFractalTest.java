@@ -14,7 +14,7 @@ public class CircleFractalTest {
 	
 	@Test
 	public void createFractal(){
-		CircleFractal cf = new CircleFractal(400, 5, 15, 450, 450);
+		CircleFractal cf = new CircleFractal(400, 5, 15, 450, 450, 0);
 		List<Circle> circles = cf.getCircles();
 		assertEquals(1529, circles.size());
 		assertEquals(7, cf.getCirclesByDepth(0).size());

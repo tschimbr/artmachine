@@ -5,7 +5,7 @@ java_import Java::Ch.eonum.artmachine.CircleFractal
 java_import Java::Ch.eonum.artmachine.Drawing
 
 class CompareController < ApplicationController
-  @@cf = CircleFractal.new(400, 5, 15, 450, 450);
+  @@cf = CircleFractal.new(400, 5, 15, 450, 450, Generationstat.max(:generation) + 1);
   
   def compare
     unless(params[:id] == nil)

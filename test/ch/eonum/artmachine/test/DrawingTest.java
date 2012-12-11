@@ -86,7 +86,7 @@ public class DrawingTest {
 	
 	@Test
 	public void testRandomCreation(){
-		CircleFractal cf = new CircleFractal(400, 5, 15, 450, 450);
+		CircleFractal cf = new CircleFractal(400, 5, 15, 450, 450, 0);
 		for(int i = 0; i < 100; i++){
 			Drawing rd = cf.createRandomDrawingWithIntersections(150);
 			assertTrue(rd.getArcs().size() > 0);
