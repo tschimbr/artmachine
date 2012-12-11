@@ -42,8 +42,8 @@ public class Drawing {
 	 * @param seed
 	 */
 	public Drawing(Drawing drawing, int seed) {
-		this.setArcs(new ArrayList<Arc>());
-		this.arcsHierarchical = new ArrayList<List<Arc>>();
+		this.setArcs(new ArrayList<Arc>(drawing.arcs));
+		this.arcsHierarchical = new ArrayList<List<Arc>>(drawing.arcsHierarchical);
 		this.rand = new Random(seed);
 		this.probabilities = new HashMap<String, Double>(drawing.probabilities);
 	}
@@ -57,7 +57,7 @@ public class Drawing {
 	 * @return
 	 */
 	public boolean addArc(Arc arc, int numSequence){
-		if(this.arcsHierarchical.size() < numSequence + 1)
+		if(this.arcsHierarchical.size() == numSequence)
 			this.arcsHierarchical.add(numSequence, new ArrayList<Arc>());
 		this.arcsHierarchical.get(numSequence).add(arc);
 		return this.arcs.add(arc);
@@ -92,7 +92,8 @@ public class Drawing {
 		String json ="[";
 		for(int i = 0; i < arcList.size() - 1; i++)
 			json += arcList.get(i).toJSON() + ",\n";
-		json += arcList.get(arcList.size() - 1).toJSON();
+		if(arcList.size() >= 1)
+			json += arcList.get(arcList.size() - 1).toJSON();
 		return json + "]";
 	}
 
@@ -157,7 +158,7 @@ public class Drawing {
 	 * @param d2
 	 * @return
 	 */
-	public Drawing crossover(Drawing d2) {
+	public Drawing crossoverMeta(Drawing d2) {
 		Drawing d = new Drawing(rand.nextInt());
 		for(String key : this.probabilities.keySet()){
 			if(rand.nextBoolean())
@@ -182,6 +183,50 @@ public class Drawing {
 
 	public Set<String> getAllProbabilities() {
 		return this.probabilities.keySet();
+	}
+
+	public void mutate() {
+		this.mutateMeta();
+		if(rand.nextDouble() < this.getProb("removeArchH"))
+			if(arcsHierarchical.size() >= 1)
+				this.arcsHierarchical.remove(rand.nextInt(arcsHierarchical.size()));
+		if(rand.nextDouble() < this.getProb("removeArch")){
+			List<Arc> l = this.arcsHierarchical.get(rand.nextInt(arcsHierarchical.size()));
+			l.remove(rand.nextInt(l.size()));
+		}
+			
+//		if(rand.nextDouble() < this.getProb("addArchH"))
+//			this.arcsHierarchical.remove(rand.nextInt(arcsHierarchical.size()));
+		
+//		if(rand.nextDouble() < this.getProb("addArch"))
+//			this.arcsHierarchical.remove(rand.nextInt(arcsHierarchical.size()));
+		
+		this.recalculateArcs();
+	}
+
+	private void recalculateArcs() {
+		this.arcs = new ArrayList<Arc>();
+		for(List<Arc> l : arcsHierarchical)
+			for(Arc e : l)
+				arcs.add(e);
+	}
+
+	public Drawing crossover(Drawing d2) {
+		Drawing newD = this.crossoverMeta(d2);
+		List<List<Arc>> arcsLists = this.arcsHierarchical;
+		arcsLists.addAll(d2.arcsHierarchical);
+		newD.arcsHierarchical = new ArrayList<List<Arc>>();
+		newD.arcs = new ArrayList<Arc>();
+		int i = 0;
+		for(List<Arc> each : arcsLists){
+			if(rand.nextBoolean()){
+				for(Arc arc : each)
+					newD.addArc(arc, i);
+				i++;
+			}
+		}
+		
+		return newD;
 	}
 
 }
