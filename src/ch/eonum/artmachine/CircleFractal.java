@@ -380,6 +380,7 @@ public class CircleFractal {
 			Drawing d = null;
 			if(generation < newRandom) {
 				d = new Drawing(rand.nextInt());
+				d = this.createRandomDrawingWithIntersections(d, maxArcs);
 				d.putProb("newRandom", 1.0);
 			} else if (generation < newRandom + mutations) {
 				d = new Drawing(oldDrawings.get(rand.nextInt(oldDrawings.size())), rand.nextInt());
@@ -392,7 +393,7 @@ public class CircleFractal {
 				d.putProb("crossover", 1.0);
 			}
 			
-			newDrawings.add(this.createRandomDrawingWithIntersections(d, maxArcs));
+			newDrawings.add(d);
 		}
 		return newDrawings;
 	}
