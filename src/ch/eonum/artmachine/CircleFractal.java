@@ -135,7 +135,7 @@ public class CircleFractal {
 		return d;
 	}
 	
-	private Drawing createRandomDrawingWithIntersections(Drawing d, int maxArcs) {
+	public Drawing createRandomDrawingWithIntersections(Drawing d, int maxArcs) {
 		int arcs = (int) (maxArcs * d.getProb("numArcs")) + 1;
 
 		double end = 0.0;
@@ -384,7 +384,7 @@ public class CircleFractal {
 				d.putProb("newRandom", 1.0);
 			} else if (generation < newRandom + mutations) {
 				d = new Drawing(oldDrawings.get(rand.nextInt(oldDrawings.size())), rand.nextInt());
-				d.mutate();
+				d.mutate(this);
 				d.putProb("mutation", 1.0);
 			} else {
 				Drawing d1 = oldDrawings.get(rand.nextInt(oldDrawings.size()));
