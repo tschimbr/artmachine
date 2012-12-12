@@ -102,7 +102,8 @@ public class Drawing {
 		String[] probs = probabilities.keySet().toArray(new String[1]);
 		for(int i = 0; i < probs.length - 1; i++)
 			json += "  \"" + probs[i] + "\": " + probabilities.get(probs[i]) + ",\n";
-		json += "  \"" + probs[probs.length-1] + "\": " + probabilities.get(probs[probs.length-1]);
+		if(probs.length >= 1)
+			json += "  \"" + probs[probs.length-1] + "\": " + probabilities.get(probs[probs.length-1]);
 		return json + "\n}";
 	}
 
@@ -110,7 +111,8 @@ public class Drawing {
 		String json ="[";
 		for(int i = 0; i < this.arcsHierarchical.size() - 1; i++)
 			json += arcsToJSON(arcsHierarchical.get(i)) + ", ";
-		json += arcsToJSON(arcsHierarchical.get(arcsHierarchical.size() - 1));
+		if(arcsHierarchical.size() >= 1)
+			json += arcsToJSON(arcsHierarchical.get(arcsHierarchical.size() - 1));
 		return json + "]";
 	}
 
