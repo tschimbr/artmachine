@@ -102,7 +102,8 @@ public class Drawing {
 		String[] probs = probabilities.keySet().toArray(new String[1]);
 		for(int i = 0; i < probs.length - 1; i++)
 			json += "  \"" + probs[i] + "\": " + probabilities.get(probs[i]) + ",\n";
-		json += "  \"" + probs[probs.length-1] + "\": " + probabilities.get(probs[probs.length-1]);
+		if(probs.length >= 1)
+			json += "  \"" + probs[probs.length-1] + "\": " + probabilities.get(probs[probs.length-1]);
 		return json + "\n}";
 	}
 
@@ -110,7 +111,8 @@ public class Drawing {
 		String json ="[";
 		for(int i = 0; i < this.arcsHierarchical.size() - 1; i++)
 			json += arcsToJSON(arcsHierarchical.get(i)) + ", ";
-		json += arcsToJSON(arcsHierarchical.get(arcsHierarchical.size() - 1));
+		if(arcsHierarchical.size() >= 1)
+			json += arcsToJSON(arcsHierarchical.get(arcsHierarchical.size() - 1));
 		return json + "]";
 	}
 
@@ -185,7 +187,7 @@ public class Drawing {
 		return this.probabilities.keySet();
 	}
 
-	public void mutate() {
+	public void mutate(CircleFractal fractal) {
 		this.mutateMeta();
 		if(rand.nextDouble() < this.getProb("removeArchH"))
 			if(arcsHierarchical.size() >= 1)
@@ -194,12 +196,22 @@ public class Drawing {
 			List<Arc> l = this.arcsHierarchical.get(rand.nextInt(arcsHierarchical.size()));
 			l.remove(rand.nextInt(l.size()));
 		}
-			
-//		if(rand.nextDouble() < this.getProb("addArchH"))
-//			this.arcsHierarchical.remove(rand.nextInt(arcsHierarchical.size()));
 		
-//		if(rand.nextDouble() < this.getProb("addArch"))
-//			this.arcsHierarchical.remove(rand.nextInt(arcsHierarchical.size()));
+		
+		if(rand.nextDouble() < this.getProb("addArchH")){
+			Drawing d = fractal.createRandomDrawingWithIntersections(this, this.arcs.size() * 2);
+			this.arcsHierarchical.add(d.arcsHierarchical.get(rand.nextInt(arcsHierarchical.size())));
+		}
+		
+		if(rand.nextDouble() < this.getProb("cutLine")){
+			List<Arc> line = this.arcsHierarchical.get(rand.nextInt(arcsHierarchical.size()));
+			int cut = rand.nextInt(line.size());
+			List<Arc> line1 = line.subList(0, Math.max(0, cut - 1));
+			List<Arc> line2 = line.subList(Math.min(line.size(), cut + 1), line.size());
+			arcsHierarchical.remove(line);
+			arcsHierarchical.add(line1);
+			arcsHierarchical.add(line2);
+		}
 		
 		this.recalculateArcs();
 	}
@@ -218,14 +230,14 @@ public class Drawing {
 		newD.arcsHierarchical = new ArrayList<List<Arc>>();
 		newD.arcs = new ArrayList<Arc>();
 		int i = 0;
-		for(List<Arc> each : arcsLists){
-			if(rand.nextBoolean()){
-				for(Arc arc : each)
+		for (List<Arc> each : arcsLists) {
+			if (rand.nextBoolean() && !each.isEmpty()) {
+				for (Arc arc : each)
 					newD.addArc(arc, i);
 				i++;
 			}
 		}
-		
+
 		return newD;
 	}
 
