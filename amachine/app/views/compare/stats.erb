@@ -4,11 +4,11 @@
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
-          <%= @stats.first.header.html_safe %>,
+          <%= @last.header.html_safe %>,
           <% for stat in @stats do %>
-            <%= stat.statvalues(@stats.first.abs).html_safe %>,
+            <%= stat.statvalues(@last.abs).html_safe %>,
           <% end %>
-            <%= @last.statvalues(@stats.first.abs).html_safe %>
+            <%= @last.statvalues(@last.abs).html_safe %>
         ]);
 
         var options = {

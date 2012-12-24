@@ -192,9 +192,10 @@ public class Drawing {
 		if(rand.nextDouble() < this.getProb("removeArchH"))
 			if(arcsHierarchical.size() >= 1)
 				this.arcsHierarchical.remove(rand.nextInt(arcsHierarchical.size()));
-		if(rand.nextDouble() < this.getProb("removeArch")){
+		if(rand.nextDouble() < this.getProb("removeArch") && !arcsHierarchical.isEmpty()){
 			List<Arc> l = this.arcsHierarchical.get(rand.nextInt(arcsHierarchical.size()));
-			l.remove(rand.nextInt(l.size()));
+			if(!l.isEmpty())
+				l.remove(rand.nextInt(l.size()));
 		}
 		
 		
@@ -203,14 +204,16 @@ public class Drawing {
 			this.arcsHierarchical.add(d.arcsHierarchical.get(rand.nextInt(arcsHierarchical.size())));
 		}
 		
-		if(rand.nextDouble() < this.getProb("cutLine")){
+		if(rand.nextDouble() < this.getProb("cutLine") && !arcsHierarchical.isEmpty()){
 			List<Arc> line = this.arcsHierarchical.get(rand.nextInt(arcsHierarchical.size()));
-			int cut = rand.nextInt(line.size());
-			List<Arc> line1 = line.subList(0, Math.max(0, cut - 1));
-			List<Arc> line2 = line.subList(Math.min(line.size(), cut + 1), line.size());
-			arcsHierarchical.remove(line);
-			arcsHierarchical.add(line1);
-			arcsHierarchical.add(line2);
+			if(!line.isEmpty()){
+				int cut = rand.nextInt(line.size());
+				List<Arc> line1 = line.subList(0, Math.max(0, cut - 1));
+				List<Arc> line2 = line.subList(Math.min(line.size(), cut + 1), line.size());
+				arcsHierarchical.remove(line);
+				arcsHierarchical.add(line1);
+				arcsHierarchical.add(line2);
+			}
 		}
 		
 		this.recalculateArcs();
