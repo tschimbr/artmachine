@@ -1,5 +1,8 @@
 package ch.eonum.artmachine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Circle {
 
 	public final int depth;
@@ -7,6 +10,7 @@ public class Circle {
 	public final double y;
 	public final double x;
 	public final int index;
+	private List<Circle> intersectingCircles;
 
 	public Circle(double x, double y, double radius, int depth, int index) {
 		this.x = x;
@@ -60,6 +64,30 @@ public class Circle {
 	@Override
 	public String toString(){
 		return toJSON();
+	}
+
+	/**
+	 * create a list with all circles in circles which do intersect with this
+	 * circle.
+	 * 
+	 * @param circles
+	 */
+	public void createListOfIntersectingCircles(List<Circle> circles) {
+		this.intersectingCircles = new ArrayList<Circle>();
+		for (Circle circle : circles) {
+			double delta = Math.sqrt(Math.pow(this.y - circle.y, 2)
+					+ Math.pow(this.x - circle.x, 2));
+			if (delta >= circle.radius + this.radius
+					|| delta + Math.min(circle.radius, this.radius) <= Math
+							.max(circle.radius, this.radius) || circle == this)
+				continue;
+
+			intersectingCircles.add(circle);
+		}
+	}
+
+	public boolean intersects(Circle circle) {
+		return this.intersectingCircles.contains(circle);
 	}
 
 }

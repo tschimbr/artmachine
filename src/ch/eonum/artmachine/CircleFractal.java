@@ -95,6 +95,9 @@ public class CircleFractal {
 		makeCircle(cx+xlag, cy-cradius/2., cradius/2., cdepth - 1);
 		makeCircle(cx-xlag, cy+cradius/2., cradius/2., cdepth - 1);
 		makeCircle(cx-xlag, cy-cradius/2., cradius/2., cdepth - 1);
+		
+		for(Circle circle1 : circles)
+			circle1.createListOfIntersectingCircles(circles);
 	}
 
 	private void storeCircle(double cx, double cy, double cradius, int cdepth) {
@@ -135,6 +138,13 @@ public class CircleFractal {
 		return d;
 	}
 	
+	/**
+	 * create a drawing where many arcs are connected.
+	 * 
+	 * @param d
+	 * @param maxArcs
+	 * @return
+	 */
 	public Drawing createRandomDrawingWithIntersections(Drawing d, int maxArcs) {
 		int arcs = (int) (maxArcs * d.getProb("numArcs")) + 1;
 
@@ -240,14 +250,9 @@ public class CircleFractal {
 	 */
 	private Circle getRandomIntersectingCircle(Circle circle1, Drawing d) {
 		Circle circle = null;
-		double delta = 0.;
-		do {
+		do
 			circle = randomCircle(d);
-			delta = Math.sqrt(Math.pow(circle1.y - circle.y, 2)
-					+ Math.pow(circle1.x - circle.x, 2));
-		} while (delta >= circle.radius + circle1.radius
-				|| delta + Math.min(circle.radius, circle1.radius) <= Math.max(
-						circle.radius, circle1.radius) || circle == circle1);
+		while (!circle1.intersects(circle));
 		return circle;
 	}
 
@@ -284,8 +289,8 @@ public class CircleFractal {
 	
 	/**
 	 * create as many drawings until we have numDrawings drawings. if we have
-	 * some drawings in the database, create new ones by geneticaly compose new
-	 * drawings from the old. if not, create some intial random drawings.
+	 * some drawings in the database, create new ones by genetically compose new
+	 * drawings from the old. if not, create some initial random drawings.
 	 * 
 	 * @param numDrawings
 	 *            number of drawings to be generated
