@@ -6,7 +6,7 @@ package ch.eonum.artmachine;
  *
  */
 public class Arc {
-	public final int circle;
+	public int circle;
 	public final double width;
 	public final double start;
 	public final double end;

@@ -244,4 +244,8 @@ public class Drawing {
 		return newD;
 	}
 
+	public List<List<Arc>> getArcsHierachical() {
+		return this.arcsHierarchical;
+	}
+
 }

@@ -30,7 +30,7 @@ public class CircleFractal {
 	private final int width;
 	private final int x;
 	private final int y;
-	private Set<String> circleskeys;
+	private Map<String, Integer> circleskeys;
 	private List<Circle> circles;
 	private List<List<Circle>> circlesByDepth;
 	private Set<Integer> possibleWidths;
@@ -44,7 +44,7 @@ public class CircleFractal {
 		this.width = width;
 		this.x = x;
 		this.y = y;
-		this.circleskeys = new HashSet<String>();
+		this.circleskeys = new HashMap<String, Integer>();
 		this.circles = new ArrayList<Circle>();
 		this.circlesByDepth = new ArrayList<List<Circle>>();
 		this.rand = new Random(23);
@@ -70,7 +70,7 @@ public class CircleFractal {
 			return;
 		String circle = Math.floor(cx * 100) + "-" + Math.floor(cy * 100) + "-"
 				+ Math.floor(cradius * 100);
-		if (circleskeys.contains(circle))
+		if (circleskeys.containsKey(circle))
 			return;
 		if (Math.sqrt((cy - y) * (cy - y) + (cx - x) * (cx - x)) > cradius
 				+ radius)
@@ -103,12 +103,12 @@ public class CircleFractal {
 	private void storeCircle(double cx, double cy, double cradius, int cdepth) {
 		String circle = Math.floor(cx * 100) + "-" + Math.floor(cy * 100) + "-"
 				+ Math.floor(cradius * 100);
-		if (circleskeys.contains(circle))
+		if (circleskeys.containsKey(circle))
 			return;
 		Circle c = new Circle(cx, cy, cradius, cdepth, circles.size());
 		circles.add(c);
 		circlesByDepth.get(depth - cdepth).add(c);
-		circleskeys.add(circle);
+		circleskeys.put(circle, c.index);
 	}
 
 	public List<Circle> getCircles() {
@@ -398,8 +398,32 @@ public class CircleFractal {
 				d.putProb("crossover", 1.0);
 			}
 			
+			if(d.getProb("translateSegment") > rand.nextDouble())
+				for(int j = 0; j < rand.nextInt(5); j++)
+					translateSegment(d);
+			
 			newDrawings.add(d);
 		}
 		return newDrawings;
+	}
+
+	/** randomly translate a segment/fragment in the given drawing. */
+	private void translateSegment(Drawing d) {
+		List<List<Arc>> arcs = d.getArcsHierachical();
+		List<Arc> fragment = arcs.get(rand.nextInt(arcs.size()));
+		if(fragment.isEmpty()) return;
+		Arc first = fragment.get(0);
+		Circle firstCircle = circles.get(first.circle);
+		List<Circle> circlesByThisDepth = this.circlesByDepth.get(firstCircle.depth);
+		Circle randomCircleWithSameDepth = circlesByThisDepth.get(rand.nextInt(circlesByThisDepth.size()));
+		double xDelta = randomCircleWithSameDepth.x - firstCircle.x;
+		double yDelta = randomCircleWithSameDepth.y - firstCircle.y;
+		for(Arc arc : fragment){
+			Circle c = circles.get(arc.circle);
+			String circle = Math.floor((c.x + xDelta) * 100) + "-" + Math.floor((c.y + yDelta) * 100) + "-"
+					+ Math.floor(c.radius * 100);
+			arc.circle = this.circleskeys.get(circle);
+			
+		}
 	}
 }
