@@ -399,7 +399,7 @@ public class CircleFractal {
 			}
 			
 			if(d.getProb("translateSegment") > rand.nextDouble())
-				for(int j = 0; j < rand.nextInt(5); j++)
+				for(int j = 0; j < rand.nextInt(d.getArcsHierachical().size()); j++)
 					translateSegment(d);
 			
 			newDrawings.add(d);
@@ -414,7 +414,7 @@ public class CircleFractal {
 		if(fragment.isEmpty()) return;
 		Arc first = fragment.get(0);
 		Circle firstCircle = circles.get(first.circle);
-		List<Circle> circlesByThisDepth = this.circlesByDepth.get(firstCircle.depth);
+		List<Circle> circlesByThisDepth = this.circlesByDepth.get(depth - firstCircle.depth);
 		Circle randomCircleWithSameDepth = circlesByThisDepth.get(rand.nextInt(circlesByThisDepth.size()));
 		double xDelta = randomCircleWithSameDepth.x - firstCircle.x;
 		double yDelta = randomCircleWithSameDepth.y - firstCircle.y;
@@ -422,7 +422,8 @@ public class CircleFractal {
 			Circle c = circles.get(arc.circle);
 			String circle = Math.floor((c.x + xDelta) * 100) + "-" + Math.floor((c.y + yDelta) * 100) + "-"
 					+ Math.floor(c.radius * 100);
-			arc.circle = this.circleskeys.get(circle);
+			if(this.circleskeys.containsKey(circle))
+				arc.circle = this.circleskeys.get(circle);
 			
 		}
 	}
